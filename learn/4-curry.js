@@ -5,8 +5,8 @@
  */
 
 // 简单的柯里化
-var add = (a) => (b) => a + b
-var increment = add(1) // (b) => 1 + b
+var add = a => b => a + b
+var increment = add(1) // b => 1 + b
 increment(2) // 3
 
 // lodash curry（尽量把要操作的值作为最后一个参数，这样我们可以将缓存的函数进行拼接，最后一次性处理参数）
