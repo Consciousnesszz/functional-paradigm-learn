@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>fp practice</title>
+</head>
+<body>
+  <div id="content"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+  <script>
+    /**
+     * 目标
+     * 1. 根据特定搜索关键字构造 url
+     * 2. 向 flickr 发送 api 请求
+     * 3. 把返回的 json 转为 html 图片
+     * 4. 把图片放到屏幕上
+     */
+    requirejs.config({
+      paths: {
+        ramda: 'https://cdnjs.cloudflare.com/ajax/libs/ramda/0.13.0/ramda.min',
+        jquery: 'https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min'
+      }
+    });
+
+    require([
+        'ramda',
+        'jquery'
+      ],
+      function (_, $) {
+        var trace = _.curry((tag, x) => {
+          console.log(tag, x);
+          return x;
+        });
+        // app goes here
+        // 包装不纯的函数
+        var Impure = {
+          getJSON: _.curry((callback, url) => $.getJSON(url, callback)),
+
+          setHtml: _.curry((sel, html) => $(sel).html(html))
+        };
+
+        var getUrl = (keyword) => `https://api.flickr.com/services/feeds/photos_public.gne?tags=${keyword}&format=json&jsoncallback=?`;
+
+        // 获取地址
+        var getItems = _.compose(_.prop('items'), trace('json'));
+        var getMedia = _.compose(_.prop('m'), _.prop('media'));
+        var getImgTags = _.map(_.compose(link => `<img src="${link}" />`, getMedia));
+
+        // 渲染
+        var render = _.compose(
+          Impure.setHtml('#content'),
+          _.compose(getImgTags, getItems)
+        );
+
+        // 发起请求
+        var app = _.compose(Impure.getJSON(render), getUrl);
+
+        app('cat');
+      }
+    );
+  </script>
+</body>
+</html>
