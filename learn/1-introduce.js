@@ -27,7 +27,7 @@ var result = flock_a.conjoin(flock_c).breed(flock_b).conjoin(flock_a.breed(flock
 /**
  * 面向对象弊端
  * 1. 状态值极易改变，输入和输出不可预测
- * 2. 语法繁琐，需要及其多的命名
+ * 2. 语法繁琐，需要极其多的命名
  */
 
 // 函数式改写
